@@ -1,0 +1,38 @@
+{
+  "name": "pc-sub",
+  "version": "0.1.0",
+  "description": "pcground front-end node.js tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fi3",
+    "pc",
+    "pc-sub",
+    "fis"
+  ],
+  "author": "JinC a275727449@gmail.com",
+  "license": "MIT",
+  "bin": {
+    "pc-sub": "bin/pc-sub.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jincdream/pc-sub.git"
+  },
+  "dependencies": {
+    "fis-parser-less": "^0.1.3",
+    "fis3": "^3.0.12",
+    "fis3-hook-module": "^1.1.1",
+    "liftoff": "^2.1.0",
+    "minimist": "^1.1.1",
+    "fis-parser-marked": "0.0.6",
+    "fis3-parser-handlebars": "*",
+    "fis-parser-sass": "^0.3.8",
+  },
+  "bugs": {
+    "url": "https://github.com/jincdream/pc-sub/issues"
+  },
+  "homepage": "https://github.com/jincdream/pc-sub"
+}
