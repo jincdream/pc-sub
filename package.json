@@ -29,7 +29,8 @@
     "minimist": "^1.1.1",
     "fis-parser-marked": "0.0.6",
     "fis3-parser-handlebars": "*",
-    "fis-parser-sass": "^0.3.8"
+    "fis-parser-sass": "^0.3.8",
+    "pc-sub-command-create": "^1.0.0"
   },
   "bugs": {
     "url": "https://github.com/jincdream/pc-sub/issues"
