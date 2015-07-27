@@ -63,14 +63,14 @@ fis.pcSub = function(){
     // .media('dev')
     .match('**',{//这里封锁所有输出，只有配置了的才能进行输出
       deploy: fis.plugin('local-deliver',{
-        to: fis.get('output')
+        to: fis.get('outputDir')
       }),
       release: false,
       useHash: false
     })
     .match('**/(*).md',{
       rExt:'.html',
-      release: '/page/$1',
+      release: '${namespace}/page/$1',
       parser: fis.plugin('marked'),
     })
     .match('/page/(*).html',{
@@ -78,10 +78,10 @@ fis.pcSub = function(){
         dataFile:'/_data.js'
       }),
       useMap: true,
-      release: '/$1.html'
+      release: '${namespace}/$1.html'
     })
     .match(/(?:css|img)[\/\/](.*?)\.(.*)/,{
-      release: '/static/$1.$2'
+      release: '${namespace}/static/$1.$2'
     })
     .match('*.less', {
       parser: fis.plugin('less'),
@@ -94,7 +94,7 @@ fis.pcSub = function(){
     .match('lib/(*).js',{
       isMod: true,
       useMap: true,
-      release: '/static/$1.js'
+      release: '${namespace}/static/$1.js'
     })
     .hook('module', {
       mode: 'amd'
@@ -104,8 +104,8 @@ fis.pcSub = function(){
       //, postpackager:fis.plugin('loader',{allInOne:true})
     })
 
-  fis
-    .media('pack')
+  // fis
+    // .media('pack')
     .match('::package', {
       spriter:fis.plugin('csssprites')
       //, postpackager:fis.plugin('loader',{allInOne:true})
@@ -114,16 +114,16 @@ fis.pcSub = function(){
     .match('lib/*.js',{
       isMod: true,
       useMap: true,
-      release: '/static/lib.js',
-      packTo: '/lib/lib.js',
+      release: '${namespace}/static/lib.js',
+      packTo: '${namespace}/lib/lib.js',
       optimizer: fis.plugin('uglify-js')
     })
     .match('*.{scss,sass,less,css}', {
       optimizer: fis.plugin('clean-css')
     })
     .match('css/*.{scss,sass,less,css}',{
-      release: 'static/index.css',
-      packTo: 'css/index.css'
+      release: '${namespace}/static/index.css',
+      packTo: '${namespace}/css/index.css'
     })
     .match('*.png', {
       optimizer: fis.plugin('png-compressor'),
@@ -132,7 +132,7 @@ fis.pcSub = function(){
     .match('lib/lib.js',{
       isMod: true,
       useMap: true,
-      release: '/static/lib.js'
+      release: '${namespace}/static/lib.js'
     })
 
 }
