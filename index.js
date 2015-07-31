@@ -4,12 +4,13 @@ var fis = module.exports =  require('fis3');
 fis.require.prefixes.unshift('pc-sub');
 fis.cli.name = 'pc-sub';
 fis.cli.info = require('./package.json');
-function createRequireConfig(ret, conf, settings, opt){
+function createRequireConfig(ret, conf, settings, opt, combo){
   // console.log(ret.ids)
   var idsObj = ret.ids
   var fileId = []
   var alies = {}
   var deps = {}
+  combo = combo === 'combo' ? true : void 0
 
   var map = ret.map
   var res = map.res
@@ -44,10 +45,13 @@ function createRequireConfig(ret, conf, settings, opt){
       })
     }
   })
-  var config = JSON.stringify({
-    alies: alies,
-    deps: deps
-  })
+  var oConfig = {
+    deps      : deps,
+    alies     : alies,
+    combo     : combo,
+    comboUrl : '/??'
+  }
+  var config = JSON.stringify(oConfig)
   files.forEach(function(file,i){
     var _file = file
     file = idsObj[file]
@@ -59,7 +63,14 @@ function createRequireConfig(ret, conf, settings, opt){
     }
   })
 }
-
+function createRequireConfigCombo(){
+  var arg = []
+  for (var i = 0; i < arguments.length; i++) {
+    arg[i] = arguments[i]
+  }
+  arg.push('combo')
+  createRequireConfig.apply(fis,arg)
+}
 fis.pcSub = function(){
   console.log(fis.get('output'),'--------------------------------------------------------------')
   fis
@@ -142,7 +153,7 @@ fis.pcSub = function(){
     // })
 
     fis
-      .media('upload')
+      .media('upload-pack')
       .match('*.{scss,sass,less,css}', {
         optimizer: fis.plugin('clean-css')
       })
@@ -161,6 +172,32 @@ fis.pcSub = function(){
         isMod: true,
         useMap: true,
         release: '${namespace}/static/lib.js'
+      })
+      .match('**',{
+        charset: 'gbk',
+        deploy: [
+          fis.plugin('encoding'),
+          fis.plugin('local-deliver',{
+            to: fis.get('outputDir')
+          }),
+          fis.plugin('http-push', {
+            receiver: fis.get('remoteServer')+'/receiver',
+            to: '/node-server/www/' // 注意这个是指的是测试机器的路径，而非本地机器
+          })
+        ]
+      })
+
+    fis
+      .media('upload')
+      .match('::package', {
+        postpackager:createRequireConfigCombo
+        //, postpackager:fis.plugin('loader',{allInOne:true})
+      })
+      .match('*.{scss,sass,less,css}', {
+        optimizer: fis.plugin('clean-css')
+      })
+      .match('lib/*.js',{
+        optimizer: fis.plugin('uglify-js')
       })
       .match('**',{
         charset: 'gbk',
