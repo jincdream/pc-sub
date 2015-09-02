@@ -1,6 +1,6 @@
 {
   "name": "pc-sub",
-  "version": "0.1.5",
+  "version": "1.0.0",
   "description": "pcground front-end node.js tool",
   "main": "index.js",
   "scripts": {
@@ -23,13 +23,16 @@
   },
   "dependencies": {
     "fis-parser-less": "^0.1.3",
+    "fis-parser-marked": "0.0.6",
+    "fis-parser-sass": "^0.3.8",
     "fis3": "^3.0.12",
+    "fis3-deploy-encoding": "^1.0.0",
+    "fis3-deploy-zip": "^1.0.0",
     "fis3-hook-module": "^1.1.1",
+    "fis3-hook-relative": "^1.0.3",
+    "fis3-parser-handlebars": "*",
     "liftoff": "^2.1.0",
     "minimist": "^1.1.1",
-    "fis-parser-marked": "0.0.6",
-    "fis3-parser-handlebars": "*",
-    "fis-parser-sass": "^0.3.8",
     "pc-sub-command-create": "^1.0.0",
     "pc-sub-command-server": "^1.0.0"
   },
