@@ -202,7 +202,7 @@ fis.pcSub = function(){
         deploy: [
           fis.plugin('encoding'),
           fis.plugin('local-deliver',{
-            to: fis.get('outputDir')
+            to: fis.get('output')
           }),
           fis.plugin('http-push', {
             receiver: fis.get('remoteServer')+'/receiver',
@@ -230,7 +230,7 @@ fis.pcSub = function(){
         deploy: [
           fis.plugin('encoding'),
           fis.plugin('local-deliver',{
-            to: fis.get('outputDir')
+            to: fis.get('output')
           }),
           fis.plugin('http-push', {
             receiver: fis.get('remoteServer')+'/receiver',
@@ -270,7 +270,7 @@ fis.pcSub = function(){
           deploy: [
             fis.plugin('encoding'),
             fis.plugin('local-deliver',{
-              to: fis.get('outputDir')
+              to: fis.get('output')
             }),
             fis.plugin('zip', {
               filename: 'www1.zip'
@@ -303,7 +303,7 @@ fis.pcSub = function(){
           deploy: [
             fis.plugin('encoding'),
             fis.plugin('local-deliver',{
-              to: fis.get('outputDir')
+              to: fis.get('output')
             }),
             fis.plugin('zip', {
               filename: 'www1.zip'

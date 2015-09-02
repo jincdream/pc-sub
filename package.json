@@ -1,6 +1,6 @@
 {
   "name": "pc-sub",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "pcground front-end node.js tool",
   "main": "index.js",
   "scripts": {
@@ -34,7 +34,8 @@
     "liftoff": "^2.1.0",
     "minimist": "^1.1.1",
     "pc-sub-command-create": "^1.0.0",
-    "pc-sub-command-server": "^1.0.0"
+    "pc-sub-command-server": "^1.0.0",
+    "pc-sub-deploy-www1":"^1.0.0"
   },
   "bugs": {
     "url": "https://github.com/jincdream/pc-sub/issues"
