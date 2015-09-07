@@ -23,11 +23,10 @@ function createRequireConfig(ret, conf, settings, opt, combo){
   combo = combo || __COMBO__
   combo = combo === 'combo' ? true : void 0
 
-  var map = ret.map
-  var res = map.res
-  var pkg = map.pkg
-  var pack = {}
-
+  var map   = ret.map
+  var res   = map.res
+  var pkg   = map.pkg
+  var pack  = {}
   var files = Object.keys(idsObj)
   console.log(pkg)
 
@@ -113,6 +112,12 @@ fis.pcSub = function(){
       release: '/page/$1',
       parser: fis.plugin('marked')
     })
+    .match(/\/page\/.*?\_layout\.html/,{
+      parser: fis.plugin('handlebars',{
+        dataFile:'/_data.js',
+        _data:fis.get('extendData') || {}
+      })
+    })
     .match('/page/(*).html',{
       parser: fis.plugin('handlebars',{
         dataFile:'/_data.js',
@@ -120,6 +125,10 @@ fis.pcSub = function(){
       }),
       useMap: true,
       release: '/$1.html'
+    })
+    .match(/\/page\/layout\/.*?\.html/,{
+      useMap: !1,
+      release: !1
     })
     .match(/(?:css|img)[\/\/](.*?)\.(.*)/,{
       release: '/static/$1.$2'
@@ -198,7 +207,7 @@ fis.pcSub = function(){
         release: '/static/lib.js'
       })
       .match('**',{
-        charset: 'gbk',
+        charset: fis.get('uploadCharset'),
         deploy: [
           fis.plugin('encoding'),
           fis.plugin('local-deliver',{
@@ -226,7 +235,7 @@ fis.pcSub = function(){
         optimizer: fis.plugin('uglify-js')
       })
       .match('**',{
-        charset: 'gbk',
+        charset: fis.get('uploadCharset'),
         deploy: [
           fis.plugin('encoding'),
           fis.plugin('local-deliver',{
@@ -266,7 +275,7 @@ fis.pcSub = function(){
           optimizer: fis.plugin('uglify-js')
         })
         .match('**',{
-          charset: 'gbk',
+          charset: fis.get('uploadCharset'),
           deploy: [
             fis.plugin('encoding'),
             fis.plugin('local-deliver',{
@@ -299,7 +308,7 @@ fis.pcSub = function(){
           optimizer: fis.plugin('uglify-js')
         })
         .match('**',{
-          charset: 'gbk',
+          charset: fis.get('uploadCharset'),
           deploy: [
             fis.plugin('encoding'),
             fis.plugin('local-deliver',{
@@ -311,6 +320,51 @@ fis.pcSub = function(){
             fis.plugin('www1',{
               site: 'pconline',
               path: createPath(!0),
+              user: fis.get('user')
+            })
+          ]
+        })
+      fis
+        .media('www1-pack')
+        .match('*.{scss,sass,less,css}', {
+          optimizer: fis.plugin('clean-css')
+        })
+        .match('css/*.{scss,sass,less,css}',{
+          release: '/static/index.css',
+          packTo: '/css/index.css'
+        })
+        .match('lib/*.js',{
+          isMod: true,
+          useMap: true,
+          release: '/static/lib.js',
+          packTo: '/lib/lib.js',
+          optimizer: fis.plugin('uglify-js')
+        })
+        .match('lib/lib.js',{
+          isMod: true,
+          useMap: true,
+          release: '/static/lib.js'
+        })
+        .match('(*).zip',{
+          release: '/$1.zip'
+        })
+        .match('::package', {
+          postpackager:createRequireConfig
+          //, postpackager:fis.plugin('loader',{allInOne:true})
+        })
+        .match('**',{
+          charset: fis.get('uploadCharset'),
+          deploy: [
+            fis.plugin('encoding'),
+            fis.plugin('local-deliver',{
+              to: fis.get('output')
+            }),
+            fis.plugin('zip', {
+              filename: 'www1.zip'
+            }),
+            fis.plugin('www1',{
+              site: fis.get('site'),
+              path: createPath(),
               user: fis.get('user')
             })
           ]
