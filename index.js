@@ -138,7 +138,7 @@ fis.pcSub = function(){
       rExt: '.css'
     })
     .match('*.{scss,sass}', {
-      parser: fis.plugin('sass'),
+      parser: fis.plugin('sass2'),
       rExt: '.css'
     })
     .match('lib/(*).js',{
