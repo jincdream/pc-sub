@@ -6,8 +6,10 @@
 
 ## 1、Node.js 安装
 
-下载`v12.7.0+`版本并进行安装。
+下载`v0.12.7`版本并进行安装。
 https://nodejs.org/en/download/
+
+>目前`Node.js`最新版本为`v4.1`，因为某些插件并不支持该版本，所以需要安装旧版本。
 
 如果之前安装过的版本比较低，需要卸载当前版本并进行新版本的安装。
 >所有版本 https://nodejs.org/en/download/releases/
@@ -27,7 +29,7 @@ $ npm config set registry https://registry.npm.taobao.org
 
 ##3、安装pc-sub
 ```sh
-$ npm install -g pc-sub@1.1.1
+$ npm install -g pc-sub@1.1.3
 ```
 
 #开发规范
@@ -43,6 +45,7 @@ $ npm install -g pc-sub@1.1.1
  + work
     - dev
     - output
+    - edit
 ```
 
 ###work目录
@@ -287,12 +290,19 @@ $.ajax({
 - `-h projectName` : 初始化一个 `pchouse` 专题模板
 - `-g projectName` : 初始化一个 `pcgame` 专题模板
 
+- `-mo projectName` : 初始化一个移动端 `pconline` 专题模板
+- `-mb projectName` : 初始化一个移动端 `pcbaby`   专题模板
+- `-ma projectName` : 初始化一个移动端 `pcauto`   专题模板
+- `-ml projectName` : 初始化一个移动端 `pclady`   专题模板
+- `-mh projectName` : 初始化一个移动端 `pchouse`  专题模板
+- `-mg projectName` : 初始化一个移动端 `pcgame`   专题模板
+
 ```sh
 $ pc-sub create -o test
 ```
 
 ##release
-根`FIS3`的使用方法一样，具体可以查看`FIS3`官方文档。这里介绍几个封装好的参数。
+根`FIS3`的使用方法一样，具体可以查看[`FIS3`官方文档](http://fis.baidu.com/fis3/docs/beginning/release.html#%E4%BE%8B%E5%AD%90)。这里介绍几个封装好的参数。
 在**项目文件夹**内（有fis-conf.js的文件夹）进行 `pc-sub release`。
 
 ###参数
@@ -300,7 +310,7 @@ $ pc-sub create -o test
 ```sh
 $ pc-sub release
 ```
-或者
+或者 (监听文件改动实时编译、浏览器自动刷新)
 ```sh
 $ pc-sub release -wL
 ```
