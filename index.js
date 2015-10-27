@@ -1,5 +1,6 @@
 //vi pc-sub/index.js
 var fis = module.exports =  require('fis3');
+var shell = require('child_process').exec
 
 fis.require.prefixes.unshift('pc-sub');
 fis.cli.name = 'pc-sub';
@@ -39,7 +40,10 @@ function createRequireConfig(ret, conf, settings, opt, combo){
     if(file._likes.isJsLike){
       var fileId = _file.replace('.js','')
       idNeadNacePace && (fileId = fileId.split(':')[1])
-      modulePath[fileId] = resFile.pkg ? pkg[resFile.pkg].uri.replace(baseUrl,'') : file.url.replace(baseUrl,'')
+      
+      /*relative path*/
+
+      modulePath[fileId] = '.' + (resFile.pkg ? pkg[resFile.pkg].uri.replace(baseUrl,'') : file.url.replace(baseUrl,''))
       // file.id = file.filename
       // file.moduleId = file.filename
       if(requires.length <= 0)return deps[fileId] = void 0;
@@ -61,7 +65,7 @@ function createRequireConfig(ret, conf, settings, opt, combo){
     path     : modulePath,
     deps     : deps,
     combo    : combo,
-    comboUrl : '/??'
+    comboUrl : './??'
   }
   var config = JSON.stringify(oConfig)
   files.forEach(function(file,i){
@@ -84,8 +88,10 @@ function createRequireConfigCombo(){
   arg.push('combo')
   createRequireConfig.apply(fis,arg)
 }
+var a = 0
+var isMaster = !~process.argv.indexOf('--child-flag')
 fis.pcSub = function(){
-  console.log('-------------------------- ',fis.get('output'),' --------------------------')
+  isMaster && console.log('-------------------------- ',fis.get('output'),' --------------------------')
   /*
    * 默认输出不进行压缩
    * 默认输出：
@@ -94,9 +100,16 @@ fis.pcSub = function(){
    *   -所有 html 文件
    */
 
-  var receiverS = fis.get('receiverServer') || '/node-server/www/'
-  __COMBO__     = fis.get('useCombo')
+  var receiverS  = fis.get('receiverServer') || '/node-server/www/'
+  // var ignoreHtml = fis.get('ignoreHtml') === void 0 ? true : fis.get('ignoreHtml')
+  var ignoreHtml = !1
+  // var ignoreImg  = fis.get('ignoreImg') === void 0 ? true : fis.get('ignoreImg')
+  var ignoreImg  = !1
+  __COMBO__      = fis.get('useCombo')
+
+// 让所有文件，都使用相对路径。
   fis
+    .hook('relative')
     // .media('dev')
     .match('**',{//这里封锁所有输出，只有配置了的才能进行输出
       deploy: [
@@ -105,18 +118,13 @@ fis.pcSub = function(){
         })
       ],
       release: false,
+      relative: true,
       useHash: false
     })
     .match('**/(*).md',{
       rExt:'.html',
       release: '/page/$1',
       parser: fis.plugin('marked')
-    })
-    .match(/\/page\/.*?\_layout\.html/,{
-      parser: fis.plugin('handlebars',{
-        dataFile:'/_data.js',
-        _data:fis.get('extendData') || {}
-      })
     })
     .match('/page/(*).html',{
       parser: fis.plugin('handlebars',{
@@ -153,13 +161,19 @@ fis.pcSub = function(){
       postpackager:createRequireConfig
       //, postpackager:fis.plugin('loader',{allInOne:true})
     })
-
+    .match('*.png', {
+      optimizer: fis.plugin('png-compressor'),
+      useSpriter: true
+    })
+    // .match('*.css', {
+    //   useSprite: true
+    // })
+    // .match('::package', {
+    //   spriter:fis.plugin('csssprites')
+    //   //, postpackager:fis.plugin('loader',{allInOne:true})
+    // })
   // fis
     // .media('pack')
-    .match('::package', {
-      spriter:fis.plugin('csssprites')
-      //, postpackager:fis.plugin('loader',{allInOne:true})
-    })
     // .match('static')
     // .match('lib/*.js',{
     //   isMod: true,
@@ -175,50 +189,49 @@ fis.pcSub = function(){
     //   release: '/static/index.css',
     //   packTo: '/css/index.css'
     // })
-    .match('*.png', {
-      optimizer: fis.plugin('png-compressor'),
-      useSpriter: true
-    })
 
-    /*
-     * 打包输出，上传到 node sever 接收端：
-     *   所有 css/*.css 打包压缩成一个 index.css，
-     *   所有 lib/*.js  打包压缩成一个 lib.js
-     */
-    fis
-      .media('upload-pack')
-      .match('*.{scss,sass,less,css}', {
-        optimizer: fis.plugin('clean-css')
-      })
-      .match('css/*.{scss,sass,less,css}',{
-        release: '/static/index.css',
-        packTo: '/css/index.css'
-      })
-      .match('lib/*.js',{
-        isMod: true,
-        useMap: true,
-        release: '/static/lib.js',
-        packTo: '/lib/lib.js',
-        optimizer: fis.plugin('uglify-js')
-      })
-      .match('lib/lib.js',{
-        isMod: true,
-        useMap: true,
-        release: '/static/lib.js'
-      })
-      .match('**',{
-        charset: fis.get('uploadCharset'),
-        deploy: [
-          fis.plugin('encoding'),
-          fis.plugin('local-deliver',{
-            to: fis.get('output')
-          }),
-          fis.plugin('http-push', {
-            receiver: fis.get('remoteServer')+'/receiver',
-            to: receiverS // 注意这个是指的是测试机器的路径，而非本地机器
-          })
-        ]
-      })
+  /*
+   * 打包输出，上传到 node sever 接收端：
+   *   所有 css/*.css 打包压缩成一个 index.css，
+   *   所有 lib/*.js  打包压缩成一个 lib.js
+   */
+  fis
+    .media('upload-pack')
+    .media("**",{
+      relative: false
+    })
+    .match('*.{scss,sass,less,css}', {
+      optimizer: fis.plugin('clean-css')
+    })
+    .match('css/*.{scss,sass,less,css}',{
+      release: '/static/index.css',
+      packTo: '/css/index.css'
+    })
+    .match('lib/*.js',{
+      isMod: true,
+      useMap: true,
+      release: '/static/lib.js',
+      packTo: '/lib/lib.js',
+      optimizer: fis.plugin('uglify-js')
+    })
+    .match('lib/lib.js',{
+      isMod: true,
+      useMap: true,
+      release: '/static/lib.js'
+    })
+    .match('**',{
+      charset: fis.get('uploadCharset'),
+      deploy: [
+        fis.plugin('encoding'),
+        fis.plugin('local-deliver',{
+          to: fis.get('output')
+        }),
+        fis.plugin('http-push', {
+          receiver: fis.get('remoteServer')+'/receiver',
+          to: receiverS // 注意这个是指的是测试机器的路径，而非本地机器
+        })
+      ]
+    })
 
     /*
      * 不打包输出，上传到 node sever 接收端：
@@ -227,7 +240,9 @@ fis.pcSub = function(){
      */
     fis
       .media('upload')
-      
+      .media("**",{
+          relative: false
+        })
       .match('*.{scss,sass,less,css}', {
         optimizer: fis.plugin('clean-css')
       })
@@ -261,6 +276,16 @@ fis.pcSub = function(){
       }
       fis
         .media('www1')
+        .match('/page/(*).html',{
+          release: ignoreHtml ? !1 : '/$1.html'
+        })
+        .match(/\/page\/layout\/.*?\.html/,{
+          useMap: !1,
+          release: !1
+        })
+        .match(/(img)[\/\/](.*?)\.(.*)/,{
+          release: ignoreImg ? !1 : '/static/$1.$2'
+        })
         .match('(*).zip',{
           release: '/$1.zip'
         })
@@ -294,6 +319,16 @@ fis.pcSub = function(){
 
       fis
         .media('www1test')
+        .match('/page/(*).html',{
+          release: ignoreHtml ? !1 : '/$1.html'
+        })
+        .match(/\/page\/layout\/.*?\.html/,{
+          useMap: !1,
+          release: !1
+        })
+        .match(/(img)[\/\/](.*?)\.(.*)/,{
+          release: ignoreImg ? !1 : '/static/$1.$2'
+        })
         .match('(*).zip',{
           release: '/$1.zip'
         })
@@ -326,6 +361,16 @@ fis.pcSub = function(){
         })
       fis
         .media('www1-pack')
+        .match('/page/(*).html',{
+          release: ignoreHtml ? !1 : '/$1.html'
+        })
+        .match(/\/page\/layout\/.*?\.html/,{
+          useMap: !1,
+          release: !1
+        })
+        .match(/(img)[\/\/](.*?)\.(.*)/,{
+          release: ignoreImg ? !1 : '/static/$1.$2'
+        })
         .match('*.{scss,sass,less,css}', {
           optimizer: fis.plugin('clean-css')
         })
@@ -369,4 +414,21 @@ fis.pcSub = function(){
             })
           ]
         })
+  fis
+    .media('edite')
+    .match('/page/(*).html',{
+      parser: fis.plugin('handlebars',{
+        dataFile:'/_data.js',
+        _data:fis.get('extendData') || {},
+        _edite:true,
+        _editePath: fis.get('edite')
+      }),
+      useMap: true,
+      release: '/$1.html'
+    })
+    .match(/\/page\/layout\/.*?\.html/,{
+      useMap: !1,
+      release: !1
+    })
+  isMaster && shell('start ' + 'chrome' + ' "'+ 'http://127.0.0.1:8090/' + fis.get('namespace') + '?t=' +(+new Date) +'"')
 }
