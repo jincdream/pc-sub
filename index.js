@@ -157,21 +157,21 @@ fis.pcSub = function(){
     .hook('module', {
       mode: 'amd'
     })
-    .match('::package', {
-      postpackager:createRequireConfig
-      //, postpackager:fis.plugin('loader',{allInOne:true})
-    })
     .match('*.png', {
       optimizer: fis.plugin('png-compressor'),
       useSpriter: true
     })
-    // .match('*.css', {
-    //   useSprite: true
-    // })
-    // .match('::package', {
-    //   spriter:fis.plugin('csssprites')
-    //   //, postpackager:fis.plugin('loader',{allInOne:true})
-    // })
+    .match('*.{scss,sass,less,css}', {
+      useSprite: true
+    })
+    .match('::package', {
+      postpackager:createRequireConfig
+      //, postpackager:fis.plugin('loader',{allInOne:true})
+    })
+    .match('::package', {
+      spriter:fis.plugin('csssprites')
+      //, postpackager:fis.plugin('loader',{allInOne:true})
+    })
   // fis
     // .media('pack')
     // .match('static')
