@@ -150,7 +150,7 @@ fis.pcSub = function(){
       rExt: '.css'
     })
     .match('lib/(*).js',{
-      isMod: true,
+      // isMod: true,
       useMap: true,
       release: '/static/$1.js'
     })
@@ -176,7 +176,7 @@ fis.pcSub = function(){
     // .media('pack')
     // .match('static')
     // .match('lib/*.js',{
-    //   isMod: true,
+      isMod: true,
     //   useMap: true,
     //   release: '/static/lib.js',
     //   packTo: '/lib/lib.js',
@@ -208,14 +208,14 @@ fis.pcSub = function(){
       packTo: '/css/index.css'
     })
     .match('lib/*.js',{
-      isMod: true,
+      // isMod: true,
       useMap: true,
       release: '/static/lib.js',
       packTo: '/lib/lib.js',
       optimizer: fis.plugin('uglify-js')
     })
     .match('lib/lib.js',{
-      isMod: true,
+      // isMod: true,
       useMap: true,
       release: '/static/lib.js'
     })
@@ -379,14 +379,14 @@ fis.pcSub = function(){
           packTo: '/css/index.css'
         })
         .match('lib/*.js',{
-          isMod: true,
+          // isMod: true,
           useMap: true,
           release: '/static/lib.js',
           packTo: '/lib/lib.js',
           optimizer: fis.plugin('uglify-js')
         })
         .match('lib/lib.js',{
-          isMod: true,
+          // isMod: true,
           useMap: true,
           release: '/static/lib.js'
         })
