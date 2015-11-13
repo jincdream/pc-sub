@@ -1,45 +1,16 @@
 [TOC]
 
-#pc-sub
-
-#安装
-
-## 1、Node.js 安装
-
-下载`v0.12.7`版本并进行安装。
-https://nodejs.org/en/download/
-
->目前`Node.js`最新版本为`v4.1`，因为某些插件并不支持该版本，所以需要安装旧版本。
-
-如果之前安装过的版本比较低，需要卸载当前版本并进行新版本的安装。
->所有版本 https://nodejs.org/en/download/releases/
-
-或者使用`nvm`(比较坑)
-##2、Npm配置
-
-- 设置代理服务器，如果不是``IP直连``，需要**设置代理**，或者使用代理软件
-```sh
-$ npm config set proxy http://192.168.11.254:8080
-$ npm config set https-proxy http://192.168.11.254:8080
-```
-- 设置``npm``镜像仓库，源仓库在国外，安装包的时候网络可能会连不上，建议设置成[某宝镜像库](http://npm.taobao.org/)
-```sh
-$ npm config set registry https://registry.npm.taobao.org 
-```
-
-##3、安装pc-sub
-```sh
-$ npm install -g pc-sub@1.1.3
-```
+#pc-sub文档说明
+@[v1.2.5]
 
 #开发规范
 
 ##文件夹规范
-目前，主要定义了三个文件夹：**工作区（work）**、**开发文件夹（dev）**、**输出文件夹（ouput）**。
+目前，主要定义了四个文件夹：**工作区（work）**、**开发文件夹（dev）**、**输出文件夹（ouput）**、**编辑文件夹（edit）**。
 
 文件夹结构：
 
-``work`` > (``dev`` + ``output``)
+``work`` > (``dev`` + ``output`` + ``edit``)
 
 ```sh
  + work
@@ -103,6 +74,7 @@ $ npm install -g pc-sub@1.1.3
 	 - layout
 	 _data.js
    + source
+	 - edit
 	 - api
 	 - module
 	 - psd
@@ -110,63 +82,90 @@ $ npm install -g pc-sub@1.1.3
     fis-conf.js
 ```
 
-- **css**  ：里面所有的css将会进行编译输出，支持`LESS`和`SASS`的编译。
+- **css**  ：里面所有的css将会进行编译输出，支持`LESS`和`SASS`的编译。**（`！`SASS编译需要自行手动安装插件``fis-parser-sass2``）**
 - **img** ：页面所引用的图片将会按照`fis`的设置进行图片合并，所有图片将进行压缩。
-- **lib**  ：存放`js`文件，会自动进行`CMD规范`包裹，需配合`pcloader.js`进行`js`模块化。
+- **lib**  ：存放`js`文件，会自动进行`AMD规范`包裹，需配合`pcloader.js`进行`js`模块化。
 - **page** : 存放`html`文件和`md`文件，`md`将会编译成`html`输出；支持`handlebars`模板，`_data.js`文件是写`handlebars`模板的数据的，`layout`文件夹用来存放`handlebars-layouts`.
 - **source** :  存放一些源文件、组件和模块（目前没有进行组件化编译），`api`可以存放一些简单的接口，将会在本地服务器上输出。**source**里的全部文件都不会进行编译输出。
 
 ####fis-conf.js 说明
 ```js
-//fis.set(name,key) 可以通过 fis.get(name) 进行调用
+var path = require("path")
+var _dirName = path.resolve(__dirname)
 
-fis.set("namespace","test1")
-//把项目名定为 namespace，在自动包裹 CMD 规范的时候，xx.js文件的id将为 namespace:/lib/xx
+var workDir = path.resolve(_dirName,"../../")
+// 找出当前项目的 工作区（work目录）
+// 使用相对路径是因为方便项目文件夹切换不同的工作区，例如切换电脑回家撸代码的情况。
+
+// fis.set(name,key) 可以通过 fis.get(name) 进行调用
+
+fis.set("project.ignore",["node_modules/**", "output/**", "fis-conf.js" , ".svn/**", ".git/**" ,"source/**","**/.svn"])
+// 让FIS忽略某些目录的遍历，这里包含了默认的FIS配置，谨慎修改。
+
+fis.set("namespace","20151105_test_66")
+// 把项目名定为 namespace，在自动包裹 AMD 规范的时候，xx.js文件的id默认为 namespace:/lib/xx
 
 fis.set("count","http://count5.pconline.com.cn/newcount/count.php?channel=3936")
-//在拉取模板六网专题模板的时候，会有六网对于的计数器代码，将会 set 在这里
+// 在拉取模板六网专题模板的时候，会有六网对于的计数器代码，将会 set 在这里
 
 fis.set("user",{
-	username:"www1 name",
-	password:"www1 password",
-	designer:"designer name",
-	FEer:"your name"
+	username:"www1_name",
+	password:"www1_password",
+	designer:"designer_name",
+	FEer:"your_name"
 })
-//username 和 password 是针对 www1 服务器上传的用户名和密码。
-//designer 和 FEer 对于页面上 meta 的作者（目前并未自动进行对应）
+// username 和 password 是针对 www1 服务器上传的用户名和密码。
+// designer 和 FEer 对于页面上 meta 的作者（目前并未自动进行对应）
 
-fis.set("createTime","20150901")
+fis.set("extendData",{designer:fis.get("user").designer,FEer:fis.get("user").FEer})
+// 用于拓展 Hadlebars 的模板数据,在每个html里面都会被引用到。
+
+fis.set("createTime","20151105")
 //创建该项目的时间。（请慎修改，与默认 www1 服务器上传路径相关）
 
-fis.set("_createTime","Mon Sep 07 2015 14:23:46 GMT+0800 (CST)")
+fis.set("_createTime","Thu Nov 05 2015 11:50:51 GMT+0800 (中国标准时间)")
 //创建该项目的时间。new Date
 
-fis.set("outputDir","/Users/cenjinchao/pc/works/output/")
-//编译输出的文件夹地址。（请慎修改，与输出相关）
+fis.set("workDir",workDir)
 
-fis.set("output","/Users/cenjinchao/pc/works/output/test1")
-//编译输出的项目文件夹地址。（请慎修改，与输出相关）
+fis.set("outputDir",path.resolve(workDir,"./output"))
+// 编译输出的文件夹地址。（请慎修改，与输出相关）
 
-fis.set("devDir","/Users/cenjinchao/pc/works/dev")
-//开发文件夹地址。（请慎修改，与输出相关）
+fis.set("output",path.resolve(workDir,"./output","./20151105_test_66"))
+// 当前项目的编译输出文件夹地址。（请慎修改，与输出相关）
 
-fis.set("dev","/Users/cenjinchao/pc/works/dev/test1")
-//开发项目文件夹地址。（请慎修改，与输出相关）
+fis.set("devDir",path.resolve(workDir,"./dev"))
+// 开发文件夹地址。（请慎修改，与输出相关）
 
-fis.set("remoteServer","http://192.168.50.132:8999")
-//node.js 服务器端接收地址，目前132测试机有个相关服务器可供测试
+fis.set("dev",path.resolve(workDir,"./dev","./20151105_test_66"))
+// 当前项目开发文件夹地址。（请慎修改，与输出相关）
+
+fis.set("editDir",path.resolve(workDir,"./edit"))
+// 编辑器文件夹地址。（请慎修改，与输出相关）
+
+fis.set("edit",path.resolve(workDir,"./edit","./20151105_test_66"))
+// 当前项目编辑器文件夹地址。（请慎修改，与输出相关）
+
+fis.set("remoteServer","http://")
+// node.js 服务器端接收地址，目前132测试机有个相关服务器可供测试
 
 fis.set("site","pconline")
-//创建该项目的网站。（请慎修改，与默认 www1 服务器上传路径相关）
+// 创建该项目的网站。（请慎修改，与默认 www1 服务器上传路径相关）
 
 fis.set("city","gz")
-//创建该项目的地区。（请慎修改，与默认 www1 服务器上传路径相关）
+// 创建该项目的地区。（请慎修改，与默认 www1 服务器上传路径相关）
 
 fis.set("www1Url",false)
-//自定义www1上传路径，例如：/test/abc/123/,默认为规范路径
+// 自定义www1上传路径，例如：/test/abc/123/,默认为规范路径
 
 fis.get("uploadCharset","gbk")
-//所上传(所有上传操作)的文件编码，默认gbk
+// 所上传(所有上传操作)的文件编码，默认gbk
+
+fis.set("ignoreHtml",false)
+// 上传到www1时忽略Html文件? 默认不忽略
+
+fis.set("ignoreImg",false)
+// 上传到www1时忽略图片文件? 默认不忽略
 
 fis.pcSub()
 //执行封装好的配置
@@ -189,9 +188,14 @@ fis.pcSub()
 ###参数
  - `-s [port]` 开启服务器，默认端口`8090`，服务器将用 `pm2` 进行管理。可以安装pm2进行更多管理和监控`npm i -g pm2`
  - `-x` 为关闭服务器，如果安装了 `pm2` ，也可以通过`pm2 kill`进行关闭进程（这里将关闭所有进程）
+ - `-d` 在某些不能用 `-s`(pm2)打开服务器的情况，可以用該参数开启服务器并进入调试模式
+
+**需要在工作区目录使用**
 ```sh
-$ pc-sub server -s 8090
+$ pc-sub server -s
 $ pc-sub server -x
+
+$ pc-sub server -d
 ```
 
 ###服务器功能
@@ -290,27 +294,31 @@ $.ajax({
 - `-h projectName` : 初始化一个 `pchouse` 专题模板
 - `-g projectName` : 初始化一个 `pcgame` 专题模板
 
-- `-mo projectName` : 初始化一个移动端 `pconline` 专题模板
-- `-mb projectName` : 初始化一个移动端 `pcbaby`   专题模板
-- `-ma projectName` : 初始化一个移动端 `pcauto`   专题模板
-- `-ml projectName` : 初始化一个移动端 `pclady`   专题模板
-- `-mh projectName` : 初始化一个移动端 `pchouse`  专题模板
-- `-mg projectName` : 初始化一个移动端 `pcgame`   专题模板
+------
 
+- `-mo projectName` : 初始化一个 `pconline` 移动端专题模板
+- `-mb projectName` : 初始化一个 `pcbaby`     移动端专题模板
+- `-ma projectName` : 初始化一个 `pcauto` 移动端专题模板
+- `-ml projectName` : 初始化一个 `pclady` 移动端专题模板
+- `-mh projectName` : 初始化一个 `pchouse` 移动端专题模板
+- `-mg projectName` : 初始化一个 `pcgame` 移动端专题模板
+
+**需要在工作区目录使用**
 ```sh
 $ pc-sub create -o test
 ```
 
 ##release
-根`FIS3`的使用方法一样，具体可以查看[`FIS3`官方文档](http://fis.baidu.com/fis3/docs/beginning/release.html#%E4%BE%8B%E5%AD%90)。这里介绍几个封装好的参数。
+根`FIS3`的使用方法一样，具体可以查看`FIS3`[官方文档](https://github.com/fex-team/fis3/blob/master/doc/docs/api/command.md#release)。这里介绍几个封装好的参数。
 在**项目文件夹**内（有fis-conf.js的文件夹）进行 `pc-sub release`。
 
+**需要在项目文件夹使用**
 ###参数
 #### 无参数
 ```sh
 $ pc-sub release
 ```
-或者 (监听文件改动实时编译、浏览器自动刷新)
+或者
 ```sh
 $ pc-sub release -wL
 ```
@@ -326,6 +334,17 @@ $ pc-sub release -wL
 ```
 
 #### www1
+
+在配置好`fis-conf.js`后，就能够进行自动了
+
+```js
+fis.set("user",{
+	username:"www1_name",
+	password:"www1_password",
+	designer:"designer_name",
+	FEer:"your_name"
+})
+```
 
 注意
 ```sh
