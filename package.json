@@ -1,6 +1,6 @@
 {
   "name": "pc-sub",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "pcground front-end node.js tool",
   "main": "index.js",
   "scripts": {

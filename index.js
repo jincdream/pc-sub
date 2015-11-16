@@ -176,7 +176,7 @@ fis.pcSub = function(){
     // .media('pack')
     // .match('static')
     // .match('lib/*.js',{
-      isMod: true,
+      // isMod: true,
     //   useMap: true,
     //   release: '/static/lib.js',
     //   packTo: '/lib/lib.js',
