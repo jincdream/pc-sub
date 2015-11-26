@@ -1,6 +1,6 @@
 {
   "name": "pc-sub",
-  "version": "1.2.6",
+  "version": "1.2.7",
   "description": "pcground front-end node.js tool",
   "main": "index.js",
   "scripts": {
@@ -31,9 +31,9 @@
     "fis3-hook-relative": "^1.0.5",
     "liftoff": "^2.1.0",
     "minimist": "^1.1.1",
-    "fis3-parser-handlebars": "^1.2.0",
+    "fis3-parser-handlebars": "^1.2.7",
     "pc-sub-command-create": "^1.2.0",
-    "pc-sub-command-server": "^1.2.0",
+    "pc-sub-command-server": "^1.2.7",
     "pc-sub-deploy-www1":"^1.0.0"
   },
   "bugs": {

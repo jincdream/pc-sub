@@ -128,13 +128,23 @@ fis.pcSub = function(){
     })
     .match('/page/(*).html',{
       parser: fis.plugin('handlebars',{
-        dataFile:'/_data.js',
+        dataFile:'_data.js',
         _data:fis.get('extendData') || {}
       }),
       useMap: true,
       release: '/$1.html'
     })
-    .match(/\/page\/layout\/.*?\.html/,{
+    .match('/page/(**)/(*).html',{
+      useMap: true,
+      release: '/$1/$2.html'
+    })
+    .match('/page/(*).html:js',{
+      release:'/'
+    })
+    .match('/page/(*).html:html',{
+      release:'/'
+    })
+    .match(/\/page\/(?:layout|tmpl)\/.*?\.html/,{
       useMap: !1,
       release: !1
     })
@@ -162,7 +172,11 @@ fis.pcSub = function(){
       useSpriter: true
     })
     .match('*.{scss,sass,less,css}', {
-      useSprite: true
+      useSpriter: true
+    })
+    .match('/page/(*).html:css',{
+      release:'/',
+      useSpriter: true
     })
     .match('::package', {
       postpackager:createRequireConfig
@@ -176,7 +190,7 @@ fis.pcSub = function(){
     // .media('pack')
     // .match('static')
     // .match('lib/*.js',{
-      // isMod: true,
+    //  isMod: true,
     //   useMap: true,
     //   release: '/static/lib.js',
     //   packTo: '/lib/lib.js',
@@ -279,10 +293,6 @@ fis.pcSub = function(){
         .match('/page/(*).html',{
           release: ignoreHtml ? !1 : '/$1.html'
         })
-        .match(/\/page\/layout\/.*?\.html/,{
-          useMap: !1,
-          release: !1
-        })
         .match(/(img)[\/\/](.*?)\.(.*)/,{
           release: ignoreImg ? !1 : '/static/$1.$2'
         })
@@ -322,10 +332,6 @@ fis.pcSub = function(){
         .match('/page/(*).html',{
           release: ignoreHtml ? !1 : '/$1.html'
         })
-        .match(/\/page\/layout\/.*?\.html/,{
-          useMap: !1,
-          release: !1
-        })
         .match(/(img)[\/\/](.*?)\.(.*)/,{
           release: ignoreImg ? !1 : '/static/$1.$2'
         })
@@ -363,10 +369,6 @@ fis.pcSub = function(){
         .media('www1-pack')
         .match('/page/(*).html',{
           release: ignoreHtml ? !1 : '/$1.html'
-        })
-        .match(/\/page\/layout\/.*?\.html/,{
-          useMap: !1,
-          release: !1
         })
         .match(/(img)[\/\/](.*?)\.(.*)/,{
           release: ignoreImg ? !1 : '/static/$1.$2'
@@ -414,21 +416,5 @@ fis.pcSub = function(){
             })
           ]
         })
-  fis
-    .media('edite')
-    .match('/page/(*).html',{
-      parser: fis.plugin('handlebars',{
-        dataFile:'/_data.js',
-        _data:fis.get('extendData') || {},
-        _edite:true,
-        _editePath: fis.get('edite')
-      }),
-      useMap: true,
-      release: '/$1.html'
-    })
-    .match(/\/page\/layout\/.*?\.html/,{
-      useMap: !1,
-      release: !1
-    })
-  isMaster && shell('start ' + 'chrome' + ' "'+ 'http://127.0.0.1:8090/' + fis.get('namespace') + '?t=' +(+new Date) +'"')
+  isMaster && shell('start ' + 'chrome' + ' "'+ 'http://127.0.0.1:8090/' + fis.get('namespace') + '/index.html?t=' +(+new Date) +'"')
 }
